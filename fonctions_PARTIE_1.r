@@ -31,21 +31,10 @@ variance <- function(v){
 
 
 
-longZ <- function(wideZ){
-  longZ <- as.data.frame(wideZ)
-  names(longZ) <- c(1:dim(longZ)[2])
-  longZ <- gather(longZ)
-  setnames(longZ, "key" , "j")
-  longZ$i <- rep(c(1:dim(wideZ)[1]), dim(wideZ)[2])
-  longZ <- longZ[c("i","j","value")]
-  return(longZ)
-}
-
-
 affichage_matrice <- function(M, r= "", paletteinf = "", palettesup = "", titre = "", nom_axeX = "", nom_axeY = "", echelle = "Echelle"){
   titre <- str_c(titre, " - Var = " ,as.character(round(variance(M), 4)),  sep = "")
-  M <- gather(M) # trois colonnes : les i, les j, les valeurs
-  p <- ggplot(data = M, aes(x=Var1 -0.5 , y=Var2-0.5) )
+  M <- reshape2::melt(M) # trois colonnes : les i, les j, les valeurs
+  p <- ggplot(data = M, aes(x = Var1 -0.5 , y = Var2-0.5) )
   if(r != ""){p <- ggplot(M, aes(x = Var1 -0.5+r , y = Var2 -0.5+r, z= value, fill=value))}
   p <- p + 
     geom_tile(aes(fill = value))
@@ -61,6 +50,7 @@ affichage_matrice <- function(M, r= "", paletteinf = "", palettesup = "", titre 
     scale_x_continuous(breaks= pretty_breaks())
   return(p)
 }
+
 
 
 affichage_niveau <- function(M, r = "", titre = "Lissage de Y", nom_axeX = "", nom_axeY = "", echelle = "Echelle"){
